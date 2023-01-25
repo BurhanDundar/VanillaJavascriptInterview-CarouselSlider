@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body></body>
+  <style>
+    .body {
+      padding: 0;
+      margin: 0;
+    }
+  </style>
+  <script>
+    const recommenderBox = document.createElement("div");
+
+    recommenderBox.style = `
+            width: 1100px;
+            background-color: white;
+            margin: 100px auto;
+            border: solid 1px transparent;
+            display: flex;
+            flex-direction: column;
+            box-shadow: rgba(27, 31, 35, 0.04) 0px 1px 0px, rgba(255, 255, 255, 0.25) 0px 1px 0px inset;
+            height: 50vmin;
+            min-height: 400px;
+            text-align: start; 
+        `;
+
+    const title = document.createElement("h2");
+
+    title.innerText = "YOU MIGHT ALSO LIKE";
+    title.style = `
+        font-family: "Open Sans",sans-serif;
+        font-weight: bold !important;
+        height: 34px;
+        font-size: 14px;
+        color: #555;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        min-height: 34px;
+        margin-left: 32px;
+
+    `;
+
+    const wrapper = document.createElement("div");
+
+    wrapper.style = `
+            width: 100%;
+            height: 40vmin;
+            background-color: white;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            min-height: 350px;
+            max-height: 350px;
+
+        `;
+
+    const leftArrow = document.createElement("div");
+    const rightArrow = document.createElement("div");
+
+    let arrowStyle = `
+	width: 20px;
+	height: 20px;
+    min-width: 20px;
+	min-height: 20px;
+	background: transparent;
+	border-top: 4px solid rgb(85, 85, 85);
+	border-right: 4px solid rgb(85, 85, 85);
+	box-shadow: 0 0 0 lightgray;
+	transition: all 200ms ease;
+    left: 0;
+`;
+
+    leftArrow.style = arrowStyle;
+    rightArrow.style = arrowStyle;
+
+    leftArrow.style.transform = "translate3d(0,-50%,0) rotate(-135deg";
+    rightArrow.style.transform = "translate3d(0,-50%,0) rotate(45deg)";
+
+
+    const carousel = document.createElement("div");
+
+    carousel.style = `
+            width: 1000px;
+            height: 100%;
+            overflow: hidden;
+            position: relative;
+        `;
+
+
+    // Hover
+    function hover(arrow) {
+        arrow.onmouseenter = function () {
+        arrow.style.cursor = "pointer";
+        arrow.style.borderTopColor = "black";
+        arrow.style.borderRightColor = "black";
+      };
+        arrow.onmouseleave = function () {
+        arrow.style.cursor = "auto";
+        arrow.style.borderTopColor = "rgb(85, 85, 85)";
+        arrow.style.borderRightColor = "rgb(85, 85, 85)";
+      };
+    }
+
+    hover(leftArrow);
+    hover(rightArrow);
+
+    const productContainer = document.createElement("div");
+
+    productContainer.style = `
+            display: flex;
+            position: relative;
+            width: 10000px;
+            height: 100%;
+            transition: all 1s ease;
+        `;
+
+        //Get products data
+
+    fetch("https://opt-interview-projects.onrender.com/smart-recommender")
+      .then((response) => response.json())
+      .then((data) => {
+        let productData = data;
+
+        for (let i = 0; i < productData.length; i++) {
+          const product = document.createElement("a");
+
+          product.setAttribute("href", productData[i].url);
+          product.setAttribute("target", "_blank");
+          product.style = `
+            width: 200px;
+            height: 100%;
+            background-color: white;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            text-align: center;
+            text-decoration: none;
+
+        `;
+          productContainer.appendChild(product);
+
+          const productImage = document.createElement("img");
+
+          productImage.setAttribute("src", productData[i].img);
+
+          productImage.style = `
+            width: 90%;
+            margin: 10px auto;            `;
+
+          const productName = document.createElement("p");
+
+          productName.innerText = productData[i].name;
+
+          productName.style = `
+            font-family: "Open Sans",sans-serif;
+            font-weight: 400;
+            height: 34px;
+            min-height: 34px;
+            font-size: 14px;
+            color: #555;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            line-height: 16px;
+            width: 90%;
+            margin: 10px auto;
+    `;
+
+          const productPrice = document.createElement("span");
+
+          productPrice.innerText = productData[i].price
+            ? productData[i].price + " TL"
+            : "Fiyat Bilgisi Yok";
+
+          productPrice.style = `
+            font-family: "Open Sans",sans-serif;
+            font-weight: bold;
+            height: 34px;
+            min-height: 34px;
+            font-size: 14px;
+            color: #f76262;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            line-height: 16px;
+            width: 90%;
+            margin: 10px auto;        
+        `;
+
+          product.appendChild(productImage);
+          product.appendChild(productName);
+          product.appendChild(productPrice);
+        }
+
+        //Careousel slider event
+        function slide(wrapper, items, prev, next) {
+          var posInitial,
+            slides = items.childNodes,
+            slidesLength = slides.length,
+            slideSize = items.childNodes[0].offsetWidth,
+            index = 0,
+            allowShift = true;
+
+          wrapper.classList.add("loaded");
+
+          function appendAfter(n, original, appendTo) {
+            for (var i = 0; i < n; i++) {
+              var clone = original[i].cloneNode(true);
+              appendTo.appendChild(clone);
+            }
+          }
+          appendAfter(10, slides, items);
+
+          items.insertBefore(
+            slides[slidesLength - 1].cloneNode(true),
+            slides[0]
+          );
+
+          // Click events
+          prev.addEventListener("click", function () {
+            shiftSlide(-1);
+          });
+          next.addEventListener("click", function () {
+            shiftSlide(1);
+          });
+
+          // Transition events
+          function shiftSlide(dir, action) {
+            items.style.transition = "left .1s ease-out";
+
+            if (allowShift) {
+              if (!action) {
+                posInitial = items.offsetLeft;
+              }
+
+              if (dir == 1) {
+                items.style.left = posInitial - slideSize + "px";
+                index++;
+              } else if (dir == -1) {
+                items.style.left = posInitial + slideSize + "px";
+                index--;
+              }
+            }
+            allowShift = false;
+
+            checkIndex();
+          }
+
+          function checkIndex() {
+            if (index == -1) {
+              items.style.left = -(slidesLength * slideSize) + "px";
+              index = slidesLength - 1;
+              items.style.transition = "right 3s ease-in 0s";
+            }
+
+            if (index == slidesLength) {
+              items.style.left = -(1 * slideSize) + "px";
+              index = 0;
+              items.style.transition = "right 3s ease-in 0s";
+            }
+            allowShift = true;
+          }
+        }
+
+        slide(wrapper, productContainer, leftArrow, rightArrow);
+      });
+
+    carousel.appendChild(productContainer);
+    wrapper.appendChild(leftArrow);
+    wrapper.appendChild(carousel);
+    wrapper.appendChild(rightArrow);
+    recommenderBox.appendChild(title);
+    recommenderBox.appendChild(wrapper);
+    document.body.appendChild(recommenderBox);
+
+    // RESPONSIVE DESIGN
+    function midFunc(x) {
+      if (x.matches) {
+        recommenderBox.style.width = "700px";
+        carousel.style.width = "600px";
+      } else {
+        recommenderBox.style.width = "1100px";
+        carousel.style.width = "1000px";
+      }
+    }
+
+    var midScreen = window.matchMedia("(max-width: 1180px)");
+    midFunc(midScreen);
+    midScreen.addListener(midFunc);
+
+    function minFunc(x) {
+      if (x.matches) {
+        recommenderBox.style.width = "300px";
+        carousel.style.width = "200px";
+        recommenderBox.style.textAlign = "center";
+        title.style.marginLeft = "";
+      } else {
+        recommenderBox.style.width = "700px";
+        carousel.style.width = "600px";
+        recommenderBox.style.textAlign = "start";
+        title.style.marginLeft = "32px";
+      }
+    }
+
+    var minScreen = window.matchMedia("(max-width: 720px)");
+    minFunc(minScreen);
+    minScreen.addListener(minFunc);
+
+    let footerContent = document.querySelector(".footer-content");
+
+    function insertAfter(newNode, existingNode) {
+      existingNode.parentNode.insertBefore(newNode, existingNode.nextSibling);
+    }
+
+    insertAfter(recommenderBox, footerContent);
+  </script>
+</html>
